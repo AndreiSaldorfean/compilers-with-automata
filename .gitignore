@@ -1,0 +1,10 @@
+#configuration files
+*.json
+
+#docs
+*.pdf
+
+#build and automation
+build/
+.cache/
+.vscode/
