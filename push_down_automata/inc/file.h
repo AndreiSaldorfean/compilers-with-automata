@@ -53,18 +53,9 @@ template <typename T>
 int File<T>::readline(char *line)
 {
   int size = 0;
-  memset(line, 0, sizeof(line));
+  memset(line, 0, BUFFER_SIZE);
   if(file.getline(line,BUFFER_SIZE))return 1;
   return 0;
-
-  // if ((line[0] == '\0') || (line[0] == '\1'))
-  //   return 0;
-
-  // if (line[0] == '\n')
-  //   line[0] = 0;
-
-  // for (int i = 0; (file.peek() != '\n' && file.peek() != '\0' && file.get(line[i])); i++)
-  //   size = i;
 }
 
 template <typename T>
