@@ -68,26 +68,30 @@ static int findPerfectMatch(std::string container[], std::string str, int contai
 }
 
 
-static void tokenizeFromArray(std::string destination[], std::string references[], char source[])
+static bool tokenizeFromArray(std::string destination[], std::string references[],const char source[])
 {
   int size = sGetSize(references);
   int idx = -1;
   int j = 0;
   std::string buffer = "";
+  bool status = false;
   for (int i = 0; i < source[i];)
   {
     if (idx == -1)
     {
       buffer.push_back(source[i]);
       i++;
+      status = false;
     }
     idx = findPerfectMatch(references, buffer, size);
     if (idx != -1)
     {
       destination[j++] = references[idx];
       buffer = "";
+      status = true;
     }
   }
+  return status;
 }
 
 static int identifyNumOfItems(std::string token,std::string nonTerm[],std::string term[]){
@@ -166,9 +170,7 @@ bool Compiler::parseGrammer(const char *fileName)
   }
 
   // Read grammer productions
-  if (!fileHandler.readline(line))
-    return false;
-  for (int lineIndex = 0; (line[0] != '\n' && line[0] != '\0'); lineIndex++)
+  for (; fileHandler.readline(line);)
   {
     clear(tokens, length);
     length = tokenize(line, tokens, ' ');
@@ -178,9 +180,6 @@ bool Compiler::parseGrammer(const char *fileName)
       pdaProductions[pdaIndex] = tokens[0];
       pdaProductionSize[pdaIndex++] = 2* identifyNumOfItems(tokens[i+1],nonTerminals,terminals);
     }
-
-    if (!fileHandler.readline(line))
-      return false;
   }
   return true;
 }
@@ -195,7 +194,7 @@ bool Compiler::parseActions(const char *fileName)
   memset(line, 0, sizeof(line));
 
   // Read table heading
-  fileHandler.readline(line);
+  if(!fileHandler.readline(line))return false;
   tokenize(line, heading, ' ');
 
   for (; fileHandler.readline(line);)
@@ -223,7 +222,7 @@ bool Compiler::parseJump(const char *fileName)
   memset(line, 0, sizeof(line));
 
   // Read table heading
-  fileHandler.readline(line);
+  if(!fileHandler.readline(line))return false;
   tokenize(line, heading, ' ');
 
   for (; fileHandler.readline(line);)
@@ -323,11 +322,10 @@ void Compiler::generateRandomExpression()
   fileHandler.write("\n");
 }
 
-bool Compiler::analyzeLine(inputBand_t *inputBand)
+bool Compiler::analyzeLine(const inputBand_t *inputBand)
 {
   std::string tokens[BUFFER_SIZE];
-  std::string ceva = inputBand;
-  tokenizeFromArray(tokens, nonTerminals, inputBand);
+  if(!tokenizeFromArray(tokens, nonTerminals, inputBand))return false;
   int size = sGetSize(tokens);
   tokens[size] = "$";
 

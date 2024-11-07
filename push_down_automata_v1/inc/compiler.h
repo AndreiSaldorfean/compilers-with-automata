@@ -20,5 +20,5 @@ public:
   void printGrammer();
   void parseExpression(const char *fileName);
   void generateRandomExpression();
-  bool analyzeLine(char* input);
+  bool analyzeLine(const char* input);
 };

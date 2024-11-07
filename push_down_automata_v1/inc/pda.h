@@ -15,7 +15,6 @@ protected:
   std::unordered_map<int, std::unordered_map<std::string, std::string>> actions;
   std::unordered_map<int, std::unordered_map<std::string, std::string>> jump;
 
-protected:
   Pda();
   void pdaPush(const char* str);
   void pdaPop();
