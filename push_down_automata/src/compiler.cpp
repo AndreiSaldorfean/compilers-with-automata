@@ -57,7 +57,7 @@ static void strip(char *line /* out */, const char delimiter = ' ')
   memcpy(line, buffer.c_str(), buffer.size());
 }
 
-static int findPerfectMatch(std::string container[], std::string str, int container_size)
+static int findPerfectMatch(const std::string container[],const std::string &str, int container_size)
 {
   for (int i = 0; i < container_size; i++)
   {
