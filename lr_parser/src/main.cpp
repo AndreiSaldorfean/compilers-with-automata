@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "typedefs.h"
 #include "clr.h"
+#include <cstring>
 
 using namespace std;
 
@@ -35,15 +36,27 @@ int main(int argc,char** argv) {
         grammar.nonTerminals = tokenize(line, " ");
 
         for(;fin.readline(line);){
+            stringArrayBuffer.clear();
             tokenizedLine = tokenize(line," ");
+#ifdef DEBUG_MACRO
+            char debug[10];
+            memcpy(debug,line,sizeof(debug));
+#endif
             for(int i=1;i<tokenizedLine.size();i++){
                 stringArrayBuffer.emplace_back(tokenizedLine[i]);
             }
             productionBuffer.lhs = tokenizedLine[0];
             productionBuffer.rhs = stringArrayBuffer;
+#ifdef DEBUG_MACRO
+            productionBuffer.initDebugger();
+#endif
 
             grammar.productions.emplace_back(productionBuffer);
         }
+
+#ifdef DEBUG_MACRO
+        grammar.initDebugger();
+#endif
         clr.setGrammar(grammar);
 
         delete[] line;

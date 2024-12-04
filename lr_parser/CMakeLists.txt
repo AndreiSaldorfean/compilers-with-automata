@@ -1,6 +1,6 @@
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 cmake_minimum_required(VERSION 3.14)
-project(SimpleGrammer)
+project(SimpleGrammer CXX)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
@@ -11,4 +11,11 @@ file(MAKE_DIRECTORY ${OUTPUT_DIR})
 
 file(GLOB SOURCES "src/*.cpp")
 add_executable(main ${SOURCES})
+target_compile_definitions(main PRIVATE $<$<CONFIG:Debug>:DEBUG_MACRO>)
 target_include_directories(main PRIVATE ./inc ./libs/)
+
+add_custom_target(run
+    COMMAND ${CMAKE_BINARY_DIR}/bin/main ../resources/grammar.txt
+    DEPENDS main
+    COMMENT "running the program"
+)

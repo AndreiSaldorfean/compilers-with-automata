@@ -16,5 +16,5 @@ elif [ "b" == $inp ];
 then
     cmake --build build
 else
-    cd build/bin && ./main.exe "$inp"
+    cd build/bin && ./main "$inp"
 fi

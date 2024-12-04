@@ -2,6 +2,8 @@
 #include "typedefs.h"
 #include <algorithm>
 #include <vector>
+#include <cstring>
+#include "utils.h"
 
 /*==============================================================*/
 /*                 Constans and local variables                 */
@@ -24,6 +26,16 @@ std::vector<item_t> Clr::goto_(item_t)
     return temp;
 }
 
+/**
+ * @brief Compute closure for an lr item
+ *
+ * @steps
+ *    - Compute FIRST for the paramter
+ *    - Add the next lr item (recursive)
+ *
+ * @param item_t item
+ * @return state
+ */
 std::vector<item_t> Clr::closure(item_t item)
 {
     std::vector<std::string> tempString = item.production.rhs;
@@ -31,6 +43,7 @@ std::vector<item_t> Clr::closure(item_t item)
     item_t tempItem;
     state.reserve(20);
 
+    // Find all productions that start with the non-terminal that is after dot
     for(production_t production : grammar.productions){
         std::vector<std::string> firstArgs;
         firstArgs.reserve(20);
@@ -49,6 +62,10 @@ std::vector<item_t> Clr::closure(item_t item)
             }
 
             tempItem.lookAhead = first(firstArgs);
+#if defined(DEBUG_MACRO)
+            tempItem.initDebugger();
+            tempItem.print('\n');
+#endif
         }
 
         state.emplace_back(tempItem);
@@ -123,11 +140,20 @@ void Clr::constructDFA()
             /*Lhs*/ grammar.productions[0].lhs + "'",
             /*Rhs*/ temp
         };
+#if defined(DEBUG_MACRO)
+        newProduction.initDebugger();
+#endif
 
         /*Insert at position 0 the new augmented start prodution*/
         grammar.productions.insert(grammar.productions.begin(), newProduction);
+#if defined(DEBUG_MACRO)
+        grammar.initDebugger();
+        printf("============Augmented Grammar==============\n");
+        grammar.print();
+#endif
     }
 
+    // Create the initial state
     {
         /* These are the states or LR(1) items (Ii)*/
         std::vector<item_t> tempLRItems;
@@ -138,6 +164,13 @@ void Clr::constructDFA()
         tempLRItems[0].lookAhead.reserve(1);
         tempLRItems[0].lookAhead.emplace_back("$");
         tempLRItems[0].production = grammar.productions[0];
+#ifdef DEBUG_MACRO
+        tempLRItems[0].initDebugger();
+        printf("=========Compute=initial=closure============\n");
+        printf("closure(");
+        tempLRItems[0].print();
+        printf(")\n");
+#endif
 
         closure(tempLRItems[0]);
     }
