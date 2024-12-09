@@ -1,13 +1,18 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include <cstring>
-#include <algorithm>
 
-typedef struct{
+typedef struct production_t
+{
     std::string lhs;
     std::vector<std::string> rhs;
+    // Equality operator
+    bool operator==(const production_t& other) const {
+      bool isEqual;
+      return lhs == other.lhs &&
+             rhs == other.rhs;
+    }
 #ifdef DEBUG_MACRO
     char debugger[10];
     void initDebugger(){
@@ -27,41 +32,19 @@ typedef struct{
 #endif
 }production_t;
 
-typedef struct
-{
-    std::string startSymbol;
-    std::vector<std::string> terminals;
-    std::vector<std::string> nonTerminals;
-    std::vector<production_t> productions;
-#ifdef DEBUG_MACRO
-    char debugger[11][11];
-    void initDebugger(){
-      std::string buffer;
-      memset(debugger,0,sizeof(debugger));
-      memcpy(debugger[0],startSymbol.data(),startSymbol.size());
-      for(auto str: terminals)buffer+=str;
-      memcpy(debugger[1],buffer.data(),buffer.size());
-      buffer.clear();
-      for(auto str: nonTerminals)buffer+=str;
-      memcpy(debugger[2],buffer.data(),buffer.size());
-      int i=3;
-      for(auto production : productions){
-        memcpy(debugger[i++],production.debugger,sizeof(production.debugger));
-      }
-    }
-    void print(){
-      for(int i=0;i<11;i++){
-        printf("%s\n",debugger[i]);
-      }
-    }
-#endif
-}grammar_t;
-
-typedef struct
+typedef struct item_t
 {
     production_t production;
     std::vector<std::string> lookAhead;
     int dotPos = 0;
+
+    // Equality operator
+    bool operator==(const item_t& other) const {
+        return production == other.production &&
+               lookAhead == other.lookAhead &&
+               dotPos == other.dotPos;
+    }
+
 #ifdef DEBUG_MACRO
     char debugger[20];
     void initDebugger(){
@@ -91,14 +74,34 @@ typedef struct
 #endif
 }item_t;
 
-
-typedef struct
+typedef struct grammar_t
 {
-    std::vector<item_t> items;
-    std::vector<std::string> transitions;
-}state_t;
+    std::string startSymbol;
+    std::vector<std::string> terminals;
+    std::vector<std::string> nonTerminals;
+    std::vector<production_t> productions;
 
-typedef struct
-{
-    std::unordered_map<int,state_t> states;
-}dfa_t;
+#ifdef DEBUG_MACRO
+    char debugger[11][11];
+    void initDebugger(){
+      std::string buffer;
+      memset(debugger,0,sizeof(debugger));
+      memcpy(debugger[0],startSymbol.data(),startSymbol.size());
+      for(auto str: terminals)buffer+=str;
+      memcpy(debugger[1],buffer.data(),buffer.size());
+      buffer.clear();
+      for(auto str: nonTerminals)buffer+=str;
+      memcpy(debugger[2],buffer.data(),buffer.size());
+      int i=3;
+      for(auto production : productions){
+        memcpy(debugger[i++],production.debugger,sizeof(production.debugger));
+      }
+    }
+    void print(){
+      for(int i=0;i<11;i++){
+        printf("%s\n",debugger[i]);
+      }
+    }
+#endif
+}grammar_t;
+

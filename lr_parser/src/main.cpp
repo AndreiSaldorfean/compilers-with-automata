@@ -38,30 +38,33 @@ int main(int argc,char** argv) {
         for(;fin.readline(line);){
             stringArrayBuffer.clear();
             tokenizedLine = tokenize(line," ");
-#ifdef DEBUG_MACRO
-            char debug[10];
-            memcpy(debug,line,sizeof(debug));
-#endif
+/* #ifdef DEBUG_MACRO */
+/*             char debug[10]; */
+/*             memcpy(debug,line,sizeof(debug)); */
+/* #endif */
             for(int i=1;i<tokenizedLine.size();i++){
                 stringArrayBuffer.emplace_back(tokenizedLine[i]);
             }
             productionBuffer.lhs = tokenizedLine[0];
             productionBuffer.rhs = stringArrayBuffer;
-#ifdef DEBUG_MACRO
-            productionBuffer.initDebugger();
-#endif
+/* #ifdef DEBUG_MACRO */
+/*             productionBuffer.initDebugger(); */
+/* #endif */
 
             grammar.productions.emplace_back(productionBuffer);
         }
 
-#ifdef DEBUG_MACRO
-        grammar.initDebugger();
-#endif
+/* #ifdef DEBUG_MACRO */
+/*         grammar.initDebugger(); */
+/*         grammar.print(); */
+/* #endif */
         clr.setGrammar(grammar);
 
         delete[] line;
     }
 
     clr.constructDFA();
+    clr.constructActionsTable();
+    clr.constructGotoTable();
     return 0;
 }
